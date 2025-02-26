@@ -3,6 +3,7 @@
 cd dockers
 ```
 
+- intsall docker
 
 # PostgreSQL Setup Instructions
 
