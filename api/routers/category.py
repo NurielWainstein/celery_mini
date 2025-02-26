@@ -13,7 +13,8 @@ def create_category(category: CategoryCreate, db: Session = Depends(get_db)):
         new_category_data = {
             "name": category.category_name,
             "region": category.region,
-            "type": category.type
+            "type": category.type,
+            "count": 0
         }
         new_category = Category.create(db, **new_category_data)
 

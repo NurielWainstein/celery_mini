@@ -9,6 +9,7 @@ class CategoryResponse(BaseModel):
     name: str
     region: str
     type: str
+    count: int
 
     class Config:
         orm_mode = True  # Allows the model to work seamlessly with SQLAlchemy models

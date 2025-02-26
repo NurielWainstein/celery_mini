@@ -2,22 +2,37 @@ import openpyxl
 
 from storage.storage_handler import StorageHandler
 
+storage_handler = StorageHandler()
 
-def load_excel(file_path):
-    try:
-        storage_handler = StorageHandler()
-        file_content = storage_handler.read_file(file_path)
+import openpyxl
+import re
 
-        if file_content is None:
-            return None
 
-        # Load the Excel file from the byte content
-        wb = openpyxl.load_workbook(filename=openpyxl.BytesIO(file_content))
-        # You can add logic to process the data here if needed
-        # For example, print the sheet names or do something with the contents
-        sheet = wb.active
-        rows = list(sheet.iter_rows(values_only=True))
-        return rows
-    except Exception as e:
-        print(f"Could not process XLSX file: {e}")
-        return None
+def process_excel_on_upload(file_path):
+    # Load the Excel workbook
+    workbook = openpyxl.load_workbook(file_path)
+
+    # Init returned values
+    total_sum = 0.0
+    excel_text = ""
+
+    # Loop through all sheets in the workbook
+    for sheet in workbook.sheetnames:
+        worksheet = workbook[sheet]
+
+        # Loop through all rows and columns to extract text
+        for row in worksheet.iter_rows():
+            for cell in row:
+                cell_value = cell.value
+                if isinstance(cell_value, str):
+                    # Extract all numeric values (including decimals) using regular expressions
+                    numbers = re.findall(r'-?\d+\.\d+|-?\d+', cell_value)
+                    for num in numbers:
+                        total_sum += float(num)
+                elif isinstance(cell_value, float) or isinstance(cell_value, int):
+                    total_sum += cell_value
+
+                excel_text += f"{cell_value} "
+
+
+    return excel_text, total_sum
