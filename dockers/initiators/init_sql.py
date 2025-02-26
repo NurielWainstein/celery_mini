@@ -1,6 +1,11 @@
+import logging
 import psycopg2
 
 from config import SQL_PORT, SQL_HOST_NAME, SQL_DBNAME, SQL_USER, SQL_PASSWORD
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)  # You can change the level to DEBUG, WARNING, etc.
+logger = logging.getLogger(__name__)
 
 # Establishing the connection
 conn = None
@@ -26,12 +31,13 @@ try:
     # Commit the transactions
     conn.commit()
 
-    print("Tables created successfully.")
+    logger.info("Tables created successfully.")
 
 except Exception as error:
-    print(f"Error connecting to PostgreSQL: {error}")
+    logger.error(f"Error connecting to PostgreSQL: {error}")
 finally:
     # Closing the cursor and connection
     if conn:
         cursor.close()
         conn.close()
+        logger.info("Connection closed.")
