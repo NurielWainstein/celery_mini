@@ -1,13 +1,16 @@
+import logging
+import time
 from sqlalchemy.orm import Session
-
+from elasticsearch import Elasticsearch
+from elasticsearch.exceptions import ConnectionError
 from config import ELASTIC_HOST
 from dbi.models.category import Category
 from dbi.sql_connector import SessionLocal
 
-import time
-from elasticsearch import Elasticsearch
-from elasticsearch.exceptions import ConnectionError
 
+# Set up logging
+logging.basicConfig(level=logging.INFO)  # You can change the level to DEBUG, WARNING, etc.
+logger = logging.getLogger(__name__)
 
 class ElasticsearchClient:
     def __init__(self, host=ELASTIC_HOST, max_retry_time=30, retry_interval=3):
@@ -32,19 +35,19 @@ class ElasticsearchClient:
 
                 # Check if Elasticsearch is running
                 if self.es.ping():
-                    print("Connected to Elasticsearch")
+                    logger.info("Connected to Elasticsearch")
                     return  # Exit the loop if successful
                 else:
-                    print("Elasticsearch is not responding, retrying...")
+                    logger.warning("Elasticsearch is not responding, retrying...")
 
             except ConnectionError:
-                print("Failed to connect to Elasticsearch, retrying...")
+                logger.warning("Failed to connect to Elasticsearch, retrying...")
 
             # Wait for the specified retry interval before trying again
             time.sleep(self.retry_interval)
 
-        # If the loop ends without a successful connection, print a message
-        print("Failed to connect to Elasticsearch after retrying for 30 seconds.")
+        # If the loop ends without a successful connection, log a message
+        logger.error("Failed to connect to Elasticsearch after retrying for 30 seconds.")
 
     def create_index(self):
         """Create the index with the custom mapping"""
@@ -61,11 +64,11 @@ class ElasticsearchClient:
 
         # Check if the index exists
         if self.es.indices.exists(index=self.documents_index):
-            print(f"Index '{self.documents_index}' already exists!")
+            logger.info(f"Index '{self.documents_index}' already exists!")
         else:
             # Create the index with the specified mapping
             self.es.indices.create(index=self.documents_index, body={"mappings": mapping})
-            print(f"Index '{self.documents_index}' created!")
+            logger.info(f"Index '{self.documents_index}' created!")
 
     def insert_document(self, doc_type, region, category, created_at, total_sum, doc_text):
         """Insert a document into the index"""
@@ -80,16 +83,16 @@ class ElasticsearchClient:
 
         # Insert the document into Elasticsearch
         res = self.es.index(index=self.documents_index, document=doc)
-        print(f"Document inserted: {res['_id']}")
+        logger.info(f"Document inserted: {res['_id']}")
         return res['_id']
 
     def get_document_by_id(self, doc_id):
         """Get a document by its ID"""
         try:
             res = self.es.get(index=self.documents_index, id=doc_id)
-            print(f"Document retrieved: {res['_source']}")
+            logger.info(f"Document retrieved: {res['_source']}")
         except Exception as e:
-            print(f"Error retrieving document: {e}")
+            logger.error(f"Error retrieving document: {e}")
 
     def get_documents_by_fields(self, fields_values):
         """Get documents by multiple fields and values (AND operator)"""
@@ -113,12 +116,12 @@ class ElasticsearchClient:
         response = []
         try:
             q_res = self.es.search(index=self.documents_index, body=query)
-            print(f"Documents found: {len(q_res['hits']['hits'])}")
+            logger.info(f"Documents found: {len(q_res['hits']['hits'])}")
             for hit in q_res['hits']['hits']:
                 response.append({hit['_id']: hit['_source']})
-                print(f"Document ID: {hit['_id']} - Source: {hit['_source']}")
+                logger.info(f"Document ID: {hit['_id']} - Source: {hit['_source']}")
         except Exception as e:
-            print(f"Error searching documents: {e}")
+            logger.error(f"Error searching documents: {e}")
 
         return response
 
@@ -158,10 +161,10 @@ class ElasticsearchClient:
             for region in regions_with_matches:
                 response.append(region)
 
-            print(f"Regions with documents containing search term '{search_term}': {response}")
+            logger.info(f"Regions with documents containing search term '{search_term}': {response}")
 
         except Exception as e:
-            print(f"Error searching documents: {e}")
+            logger.error(f"Error searching documents: {e}")
 
         return response
 
@@ -187,4 +190,4 @@ if __name__ == "__main__":
     db: Session = SessionLocal()
     existing_regions = Category.get_unique_regions(db)
 
-    print(client.find_regions("First", existing_regions))
+    print(f"Regions: {client.find_regions('First', existing_regions)}")
