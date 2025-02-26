@@ -12,4 +12,4 @@ class CategoryResponse(BaseModel):
     count: int
 
     class Config:
-        orm_mode = True  # Allows the model to work seamlessly with SQLAlchemy models
+        from_attributes = True  # Allows the model to work seamlessly with SQLAlchemy models
