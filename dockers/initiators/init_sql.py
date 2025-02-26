@@ -1,16 +1,12 @@
 import psycopg2
 
-# Database connection parameters
-host = "localhost"
-port = "5432"
-dbname = "celery_db"
-user = "postgres"
-password = "1234"
+from config import SQL_PORT, SQL_HOST_NAME, SQL_DBNAME, SQL_USER, SQL_PASSWORD
 
 # Establishing the connection
+conn = None
 try:
     conn = psycopg2.connect(
-        dbname=dbname, user=user, password=password, host=host, port=port
+        dbname=SQL_DBNAME, user=SQL_USER, password=SQL_PASSWORD, host=SQL_HOST_NAME, port=SQL_PORT
     )
     cursor = conn.cursor()
 

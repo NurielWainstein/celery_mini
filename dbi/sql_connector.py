@@ -2,10 +2,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = "postgresql://postgres:1234@localhost:5432/celery_db"
+from config import DATABASE_SQL_URL
 
 # Create the engine and session
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_SQL_URL, echo=True)
 
 # Session maker to create session instances
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

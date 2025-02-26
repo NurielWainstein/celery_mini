@@ -1,12 +1,11 @@
 import os
 
-from config import storage_path
+from config import UPLOAD_FOLDER
 
 
 class StorageHandler:
-    def __init__(self, base_upload_path="uploads"):
-        self.storage_path = storage_path
-        self.base_upload_path = os.path.join(self.storage_path, base_upload_path)
+    def __init__(self):
+        self.base_upload_path = UPLOAD_FOLDER
 
 
     def read_file(self, file_path: str):

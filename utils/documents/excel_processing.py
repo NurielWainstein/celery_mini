@@ -1,5 +1,6 @@
 import openpyxl
 
+from config import FLOAT_NUMBER_REG
 from storage.storage_handler import StorageHandler
 
 storage_handler = StorageHandler()
@@ -26,7 +27,7 @@ def process_excel_on_upload(file_path):
                 cell_value = cell.value
                 if isinstance(cell_value, str):
                     # Extract all numeric values (including decimals) using regular expressions
-                    numbers = re.findall(r'-?\d+\.\d+|-?\d+', cell_value)
+                    numbers = re.findall(FLOAT_NUMBER_REG, cell_value)
                     for num in numbers:
                         total_sum += float(num)
                 elif isinstance(cell_value, float) or isinstance(cell_value, int):

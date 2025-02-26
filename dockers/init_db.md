@@ -1,4 +1,9 @@
 
+```bash
+cd dockers
+```
+
+
 # PostgreSQL Setup Instructions
 
 1. Pull the PostgreSQL Docker image:
@@ -12,7 +17,7 @@
    ```
 
 3. Once the container is running, you can execute the Python script to interact with the PostgreSQL database:
-   ```bash
+   ```
    python initiators/init_sql.py
    ```
 
@@ -32,3 +37,4 @@
    ```
    python initiators/init_elastic.py
    ```
+   - this could take some seconds since the elastic server could still be booting up

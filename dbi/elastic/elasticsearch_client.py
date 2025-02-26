@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 
+from config import ELASTIC_HOST
 from dbi.models.category import Category
 from dbi.sql_connector import SessionLocal
 
@@ -9,7 +10,7 @@ from elasticsearch.exceptions import ConnectionError
 
 
 class ElasticsearchClient:
-    def __init__(self, host="http://localhost:9200", max_retry_time=30, retry_interval=3):
+    def __init__(self, host=ELASTIC_HOST, max_retry_time=30, retry_interval=3):
         self.host = host
         self.max_retry_time = max_retry_time
         self.retry_interval = retry_interval
@@ -27,7 +28,7 @@ class ElasticsearchClient:
             try:
                 # Attempt to connect to Elasticsearch
                 self.es = Elasticsearch(self.host,
-                                        verify_certs=False)  # Disable SSL verification (for development purposes only)
+                                        verify_certs=False)  # In real prod project we shouldn't raise this flag, add certs
 
                 # Check if Elasticsearch is running
                 if self.es.ping():
