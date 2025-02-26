@@ -1,23 +1,49 @@
-from elasticsearch import Elasticsearch
 from sqlalchemy.orm import Session
 
 from dbi.models.category import Category
 from dbi.sql_connector import SessionLocal
 
+import time
+from elasticsearch import Elasticsearch
+from elasticsearch.exceptions import ConnectionError
+
 
 class ElasticsearchClient:
-    def __init__(self, host="http://localhost:9200"):
-        # Connect to the Elasticsearch instance
-        self.es = Elasticsearch(host, verify_certs=False)  # Disable SSL verification (for development purposes only)
+    def __init__(self, host="http://localhost:9200", max_retry_time=30, retry_interval=3):
+        self.host = host
+        self.max_retry_time = max_retry_time
+        self.retry_interval = retry_interval
 
-        # Check if Elasticsearch is running
-        if not self.es.ping():
-            print("Elasticsearch is not running!")
-        else:
-            print("Connected to Elasticsearch")
+        self.es = None
+        self.connect_to_elasticsearch()
 
         # Define the index name
         self.documents_index = "documents_index"
+
+    def connect_to_elasticsearch(self):
+        start_time = time.time()
+
+        while time.time() - start_time < self.max_retry_time:
+            try:
+                # Attempt to connect to Elasticsearch
+                self.es = Elasticsearch(self.host,
+                                        verify_certs=False)  # Disable SSL verification (for development purposes only)
+
+                # Check if Elasticsearch is running
+                if self.es.ping():
+                    print("Connected to Elasticsearch")
+                    return  # Exit the loop if successful
+                else:
+                    print("Elasticsearch is not responding, retrying...")
+
+            except ConnectionError:
+                print("Failed to connect to Elasticsearch, retrying...")
+
+            # Wait for the specified retry interval before trying again
+            time.sleep(self.retry_interval)
+
+        # If the loop ends without a successful connection, print a message
+        print("Failed to connect to Elasticsearch after retrying for 30 seconds.")
 
     def create_index(self):
         """Create the index with the custom mapping"""
