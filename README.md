@@ -1,5 +1,8 @@
 - read task.md to understand the task
-
+- clone repo
+- add a venv
+- this was developed with python 3.13(keep in mind)
+  
 # how to run
 - cd to celery_mini dir
 - install requirements -> pip install -r requirements.txt
