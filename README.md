@@ -65,6 +65,6 @@ but better to have some little temporary error then a constant cumulative one, o
 - api responses should almost always be dict to avoid future changes in response structure, this way you can just add a key in the dict, avoiding frontend unnecessary code changes 
 - md5 for files, so we could double-processing the same file twice
 - we could add an error config to save common error messages and codes, this would be specially great if planing on applying some translation mechanism, using lazy string _()
-- we could add proper logs, save them in some elastic index
+- we could add proper logging, save them in some elastic index
 
 overall there are probably a lot of things that could be better, these are just some, obviously this will be terrible in large scale prod
