@@ -1,0 +1,8 @@
+# Use the official Postgres image from Docker Hub
+FROM postgres:latest
+
+# Copy the init.sql script into the container
+COPY initiators/init.sql /docker-entrypoint-initdb.d/
+
+# Expose the Postgres port (optional)
+EXPOSE 5432

@@ -1,0 +1,23 @@
+# Use the official Python 3.13 image as a base
+FROM python:3.13-slim
+
+# Set the working directory inside the container
+WORKDIR /celery_min
+
+# Copy the requirements.txt file (assuming it's in your project root)
+COPY requirements.txt .
+
+# https://stackoverflow.com/questions/74959175/getting-the-command-bin-sh-c-pip-install-no-cache-dir-r-requirements-txt
+RUN apt-get update && apt-get install -y libpq-dev build-essential
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the application code into the container
+COPY . /celery_min/
+
+# Expose the port that Uvicorn will run on
+EXPOSE 8000
+
+# Command to run the application using Uvicorn (adjust for your app location)
+CMD ["uvicorn", "api.init_app:app", "--host", "0.0.0.0", "--port", "8000"]
