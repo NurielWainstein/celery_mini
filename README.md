@@ -6,8 +6,9 @@
 # how to run
 - cd to celery_mini dir
 - install requirements -> pip install -r requirements.txt
-- read and run dockers/init_db.md
-- run api/init_app.py then open the web app and add /docs to the URL to access Swagger, which you can use for simple tests
+- read and run dockers/dockerize-app.md, do elastic and sql setup
+- if you want to test the app from docker run the app docker setup
+- if you want to debug and run locally the app then run api/init_app.py then open the web app and add /docs to the URL to access Swagger, which you can use for simple tests
 
 # why elastic?
 the task required to do text search over the documents, its not standard practice
@@ -57,6 +58,8 @@ but better to have some little temporary error then a constant cumulative one, o
 
 # possible improvements (general) and notes
 
+- add CORS in the api if planning to communicate in the future with other servers like frontend
+- check xlsx file length, we are using regex to extract file data, it would be very easy to crash the program as it is now
 - add some mock tests to ensure consistent schema and data structures
 - use ids in sql(standard practice)
 - I saved extra data like regions and types in elastic and sql, could be avoided, but also this data could be useful for future dev
@@ -69,6 +72,6 @@ but better to have some little temporary error then a constant cumulative one, o
 - md5 for files, so we could double-processing the same file twice
 - we could add an error config to save common error messages and codes, this would be specially great if planing on applying some translation mechanism, using lazy string _()
 - we could add proper logging, save them in some elastic index
-- keep the env vars, specialy the secretes in a aws vault
+- keep the env vars, specially the secretes in a aws vault
 
 overall there are probably a lot of things that could be better, these are just some, obviously this will be terrible in large scale prod
